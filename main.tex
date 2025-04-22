@@ -1,0 +1,348 @@
+\documentclass{scrreprt}
+\usepackage{listings}
+\usepackage{underscore}
+\usepackage{graphicx}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{xcolor, soul, colortbl}
+\usepackage{enumitem}
+\hypersetup{
+    pdftitle={Functional Software Test Plan},    
+    colorlinks=true,      
+    linkcolor=black,       
+    citecolor=black,       
+    filecolor=black,        
+    urlcolor=black           
+}
+\def\myversion{1.0 }
+\date{}
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\scr@startchapter}{\if@openright\cleardoublepage\else\clearpage\fi}{}{}{}
+\makeatother
+
+\begin{document}
+
+\begin{flushright}
+    \rule{16cm}{5pt}\vskip1cm
+    \begin{bfseries}
+        \Huge{FUNCTIONAL \\SOFTWARE \\TEST PLAN}\\
+        \vspace{1.5cm}
+        for\\
+        \vspace{1.5cm}
+        Encost Smart Graph Project\\
+        \vspace{1.5cm}
+        \LARGE{Version \myversion}\\
+        \vspace{1.5cm}
+        Prepared by: Student 1\\
+        SoTech Engineer \\
+        \vspace{1.5cm}
+        SoTech \\
+        \vspace{1.5cm}
+        \today\\
+    \end{bfseries}
+\end{flushright}
+
+\tableofcontents
+\newpage
+
+\chapter*{Revision History}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|p{0.25\linewidth}|p{0.1\linewidth}|p{0.45\linewidth}|p{0.1\linewidth}|}
+    \hline
+    Name & Date & Reason for Changes & Version \\
+    \hline
+    Student 1 & 20/04/2025 & Initial version & 1.0 \\
+    \hline
+\end{tabular}
+\end{table}
+
+\chapter{Introduction/Purpose}
+
+\section{Purpose}
+This document serves as the Functional Software Test Plan for the Encost Smart Graph Project (ESGP). It outlines the testing strategy to verify that the system meets all specified requirements from the Software Requirements Specification (SRS) and aligns with the design in the Software Design Specification (SDS). The plan covers black-box, white-box, and mutation testing approaches.
+
+\section{Document Conventions}
+\begin{itemize}
+    \item ESGP: Encost Smart Graph Project
+    \item SRS: Software Requirements Specification
+    \item SDS: Software Design Specification
+    \item CLI: Command Line Interface
+    \item UI: User Interface
+\end{itemize}
+
+\section{Intended Audience and Reading Suggestions}
+This document is intended for:
+\begin{itemize}
+    \item Developers implementing the ESGP system
+    \item Testers verifying system functionality
+    \item Project managers overseeing development
+    \item Quality assurance personnel
+\end{itemize}
+
+\section{Project Scope}
+The ESGP is a console application that allows users to visualize Encost's smart devices across New Zealand households. The system has two user types:
+\begin{enumerate}
+    \item Community users - can view graph visualizations
+    \item Encost users - can view graphs, upload custom datasets, and view summary statistics
+\end{enumerate}
+
+Testing will cover all high-priority functional requirements including user authentication, graph visualization, data processing, and summary statistics calculation.
+
+\chapter{Specialized Requirements Specification}
+After reviewing the SDS, the following clarifications were confirmed with the client:
+\begin{enumerate}
+    \item The graph visualization must clearly distinguish between device categories using color coding
+    \item The system must handle invalid custom dataset formats gracefully
+    \item All performance requirements (response times) must be strictly adhered to
+    \item Password hashing must use SHA-256 algorithm
+\end{enumerate}
+
+\chapter{Black-box Testing}
+
+\section{User Categorization (REQ-1 to REQ-3)}
+\subsection{Description}
+Test the system's ability to correctly categorize users as either community or Encost users and route them appropriately.
+
+\subsection{Functional Requirements Tested}
+\begin{itemize}
+    \item REQ-1: Prompt for user type
+    \item REQ-2: Store user type
+    \item REQ-3: Route to appropriate next screen
+\end{itemize}
+
+\subsection{Test Type}
+Unit test, boundary value analysis
+
+\subsection{Test Cases}
+\begin{table}[h!]
+\centering
+\begin{tabular}{|p{0.2\linewidth}|p{0.3\linewidth}|p{0.4\linewidth}|}
+    \hline
+    Test Case ID & Input & Expected Output \\
+    \hline
+    TC-UC-01 & "community" & Routes to feature options with only graph visualization \\
+    \hline
+    TC-UC-02 & "encost" & Routes to login prompt \\
+    \hline
+    TC-UC-03 & Invalid input & Error message and reprompt \\
+    \hline
+    TC-UC-04 & Empty input & Error message and reprompt \\
+    \hline
+\end{tabular}
+\end{table}
+
+\section{Encost User Login (REQ-1 to REQ-5)}
+\subsection{Description}
+Test the login functionality for Encost users including valid/invalid credentials and password hashing.
+
+\subsection{Functional Requirements Tested}
+\begin{itemize}
+    \item REQ-1: Username/password prompt
+    \item REQ-2: Input validation
+    \item REQ-3: Invalid credential handling
+    \item REQ-4: Successful login routing
+    \item REQ-5: Password encryption
+\end{itemize}
+
+\subsection{Test Type}
+Integration test (UserManager, LoginService, AuthenticationManager)
+
+\subsection{Test Cases}
+\begin{table}[h!]
+\centering
+\begin{tabular}{|p{0.2\linewidth}|p{0.3\linewidth}|p{0.4\linewidth}|}
+    \hline
+    Test Case ID & Input & Expected Output \\
+    \hline
+    TC-LG-01 & Valid credentials & Routes to feature options \\
+    \hline
+    TC-LG-02 & Invalid username & Error message and reprompt \\
+    \hline
+    TC-LG-03 & Invalid password & Error message and reprompt \\
+    \hline
+    TC-LG-04 & Empty fields & Error message and reprompt \\
+    \hline
+    TC-LG-05 & Hashed password comparison & Verifies correct hash comparison \\
+    \hline
+\end{tabular}
+\end{table}
+
+\section{Feature Options Display (REQ-1 to REQ-2)}
+\subsection{Description}
+Test that appropriate feature options are displayed based on user type.
+
+\subsection{Functional Requirements Tested}
+\begin{itemize}
+    \item REQ-1: Correct options per user type
+    \item REQ-2: Proper routing after selection
+\end{itemize}
+
+\subsection{Test Type}
+Unit test, equivalence partitioning
+
+\subsection{Test Cases}
+\begin{table}[h!]
+\centering
+\begin{tabular}{|p{0.2\linewidth}|p{0.3\linewidth}|p{0.4\linewidth}|}
+    \hline
+    Test Case ID & User Type & Expected Options \\
+    \hline
+    TC-FO-01 & Community & Graph visualization only \\
+    \hline
+    TC-FO-02 & Encost & Graph visualization, custom dataset, summary stats \\
+    \hline
+\end{tabular}
+\end{table}
+
+\section{Graph Visualization (REQ-1 to REQ-5)}
+\subsection{Description}
+Test the graph visualization functionality including node display and device categorization.
+
+\subsection{Functional Requirements Tested}
+\begin{itemize}
+    \item REQ-1: GraphStream implementation
+    \item REQ-2: All nodes displayed
+    \item REQ-3: All connections displayed
+    \item REQ-4: Device category distinction
+    \item REQ-5: Send/receive command visualization
+\end{itemize}
+
+\subsection{Test Type}
+Integration test (GraphVisualization, GraphBuilder, Dataset)
+
+\subsection{Test Cases}
+\begin{table}[h!]
+\centering
+\begin{tabular}{|p{0.2\linewidth}|p{0.3\linewidth}|p{0.4\linewidth}|}
+    \hline
+    Test Case ID & Test Data & Expected Result \\
+    \hline
+    TC-GV-01 & Default dataset & All devices displayed \\
+    \hline
+    TC-GV-02 & Custom dataset & All devices displayed \\
+    \hline
+    TC-GV-03 & Any dataset & Color coding by category \\
+    \hline
+    TC-GV-04 & Any dataset & Send/receive indicators visible \\
+    \hline
+    TC-GV-05 & Empty dataset & Appropriate error message \\
+    \hline
+\end{tabular}
+\end{table}
+
+\section{Summary Statistics Calculation}
+\subsection{Description}
+Test the calculation and display of summary statistics for device distribution, location, and connectivity.
+
+\subsection{Functional Requirements Tested}
+All requirements from sections 4.9, 4.10, and 4.11 of SRS
+
+\subsection{Test Type}
+Integration test (SummaryStatistics, DeviceDistribution, DeviceLocation, DeviceConnectivity)
+
+\subsection{Test Cases}
+\begin{table}[h!]
+\centering
+\begin{tabular}{|p{0.2\linewidth}|p{0.3\linewidth}|p{0.4\linewidth}|}
+    \hline
+    Test Case ID & Statistic Type & Verification Method \\
+    \hline
+    TC-SS-01 & Device distribution & Verify counts per category \\
+    \hline
+    TC-SS-02 & Device location & Verify regional counts \\
+    \hline
+    TC-SS-03 & Device connectivity & Verify router connection stats \\
+    \hline
+    TC-SS-04 & All statistics & Verify display formatting \\
+    \hline
+\end{tabular}
+\end{table}
+
+\chapter{White-box testing}
+
+\section{Device Distribution Calculation Pseudocode}
+\begin{lstlisting}[language=Java,frame=single]
+function countByCategory(graph):
+    categoryCounts = new Map()
+    
+    for each node in graph.nodes:
+        category = node.deviceCategory
+        if categoryCounts.contains(category):
+            categoryCounts[category] += 1
+        else:
+            categoryCounts[category] = 1
+    
+    return categoryCounts
+\end{lstlisting}
+
+\section{Branch Coverage Testing}
+To achieve 100\% branch coverage for the pseudocode above:
+
+\begin{enumerate}
+    \item \textbf{Test Case 1}: Empty graph
+    \begin{itemize}
+        \item Input: Empty graph
+        \item Expected: Empty map
+        \item Covers: No nodes branch
+    \end{itemize}
+    
+    \item \textbf{Test Case 2}: Single category
+    \begin{itemize}
+        \item Input: Graph with 3 nodes all in same category
+        \item Expected: Map with one entry, count=3
+        \item Covers: Existing category increment branch
+    \end{itemize}
+    
+    \item \textbf{Test Case 3}: Multiple categories
+    \begin{itemize}
+        \item Input: Graph with nodes in different categories
+        \item Expected: Map with multiple entries
+        \item Covers: New category addition branch
+    \end{itemize}
+    
+    \item \textbf{Test Case 4}: Mixed categories
+    \begin{itemize}
+        \item Input: Graph with some nodes sharing categories
+        \item Expected: Map with correct counts per category
+        \item Covers: Both increment and addition branches
+    \end{itemize}
+\end{enumerate}
+
+\chapter{Mutation Testing}
+
+\section{Mutant \#1: Changed increment operator}
+Original: \texttt{categoryCounts[category] += 1} \\
+Mutant: \texttt{categoryCounts[category] += 2}
+
+\section{Mutant \#2: Changed condition}
+Original: \texttt{if categoryCounts.contains(category)} \\
+Mutant: \texttt{if !categoryCounts.contains(category)}
+
+\section{Mutant \#3: Changed initialization}
+Original: \texttt{categoryCounts[category] = 1} \\
+Mutant: \texttt{categoryCounts[category] = 0}
+
+\section{Mutant \#4: Removed else branch}
+Original: Full if-else structure \\
+Mutant: Only if branch, no else
+
+\section{Mutation Score}
+
+\textbf{Test Set 1} (Basic validation):
+\begin{itemize}
+    \item Kills Mutants: 1, 3, 4
+    \item Surviving Mutant: 2
+    \item Score: 75\%
+\end{itemize}
+
+\textbf{Test Set 2} (Comprehensive validation):
+\begin{itemize}
+    \item Kills Mutants: All
+    \item Score: 100\%
+\end{itemize}
+
+\end{document}
